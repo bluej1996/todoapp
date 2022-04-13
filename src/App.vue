@@ -5,14 +5,53 @@
       <router-link class="nav-link" :to="{name: 'Home'}">Home</router-link>
       <router-link class="nav-link" :to="{name: 'Todos'}">Todos</router-link>
       <router-link class="nav-link" :to="{name: 'About'}">About</router-link>
-      <router-link class="nav-link" :to="{name:'Profile'}">Profile</router-link>      
+      <router-link class="nav-link" :to="{name:'Profile'}">Profile</router-link>    
+      
     </div>
   </nav>
   <!-- router -->
-  <router-view />
+  <div class="container">
+    <router-view @update-todot-toast="updateTodo" @new-todo-toast="newTodo"/>
+    <!-- 안내창 -->
+      <ToastBox v-if="showToast" :message="toastMessage" :type="toastAlertType" />  
+  </div>
+  
 </template>
 
 <script>
+  import ToastBox from '@/components/ToastBox.vue';
+  import { useToast } from '@/composables/toast.js';
+  export default {
+    components: {
+      ToastBox
+    },
+    setup() {
+      const updateTodo = () => {
+        console.log('업데이트');
+        triggerToast("목록이 업데이트 되었습니다.", 'success');
+      }
+      const newTodo = () => {
+        console.log('새글등록');
+        triggerToast("새로운 글이 추가되었습니다.", 'success');
+      }
+      // ToastBox 관련
+      const {
+        showToast,
+        toastMessage,
+        triggerToast,
+        toastAlertType
+      } = useToast();
+      
+      return {
+        updateTodo,
+        newTodo,
+        showToast,
+        toastMessage,
+        triggerToast,
+        toastAlertType
+      }
+    }
+  }
 </script>
 
 <style>
