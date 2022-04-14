@@ -200,7 +200,7 @@
             }
 
             const deleteTodo = async (index) => {
-                const id = todos.value[index].id;
+                const id = index;
                 error.value = '';
                 try {
                     // 전체 삭제가 아니라 id와 같은 DB 를 삭제

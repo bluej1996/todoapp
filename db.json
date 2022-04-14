@@ -1,19 +1,9 @@
 {
   "todos": [
     {
-      "subject": "공부하기33",
-      "complete": true,
-      "id": 1
-    },
-    {
       "subject": "프로필만들기",
       "complete": false,
       "id": 2
-    },
-    {
-      "subject": "클론코드 하기",
-      "complete": true,
-      "id": 3
     },
     {
       "data": {
@@ -43,28 +33,22 @@
       "id": 39
     },
     {
-      "subject": "2314",
-      "complete": true,
-      "body": "",
+      "subject": "213",
+      "complete": false,
+      "body": "312",
       "id": 40
     },
     {
-      "subject": "2323",
+      "subject": "213",
       "complete": false,
-      "body": "2332233",
+      "body": "123",
       "id": 41
     },
     {
-      "subject": "34",
+      "subject": "123",
       "complete": false,
-      "body": "545fds",
+      "body": "123",
       "id": 42
-    },
-    {
-      "subject": "sdf",
-      "complete": false,
-      "body": "fas",
-      "id": 43
     }
   ]
 }

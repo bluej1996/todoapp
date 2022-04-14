@@ -12,7 +12,6 @@ export default {
     emits: ['new-todo-toast'],
     setup(props, {emit}) {
         const newTodo = () => {
-            console.log("새글등록");
             emit('new-todo-toast', {})
         }
         return {

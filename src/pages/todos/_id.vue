@@ -12,7 +12,6 @@ export default{
     emits: ['update-todo-toast'],
     setup(props, {emit}) {
         const updateTodo = () => {
-            console.log("내용갱신");
             emit('update-todo-toast', {})
         }
         return {
