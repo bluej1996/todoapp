@@ -3,28 +3,26 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Todo Delete</h5>
+                    
+                    <h5 class="modal-title">
+                        <!-- 타이틀 slot -->
+                        <slot name="title"></slot>
+
+                    </h5>
+                    
                     <button type="button" class="close">
                         <span @click="onClose">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    내용을 삭제하시겠습니까
+                    <!-- 경고창의 본문  slot -->
+                    <!-- 내용을 삭제하시겠습니까? -->
+                    <slot name="body"></slot>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" 
-                            class="btn btn-secondary"
-                            @click= "onClose"
-                    >
-                            Close
-                    </button>
 
-                    <button type="button" 
-                            class="btn btn-danger"
-                            @click="onDelete"
-                    >
-                            Delete
-                    </button>
+                    <!-- 하단 버튼 slot -->
+                    <slot name="footer"></slot>
 
                 </div>
             </div>
@@ -33,32 +31,36 @@
 </template>
 
 <script>
+
+    import { getCurrentInstance } from 'vue'
     export default {
-        emits: ['close', 'delete'],
-        setup(props, {emit}) {
+
+        emits: ['close-win'],
+        
+        setup() {
+            const {emit} = getCurrentInstance();
             const onClose = () => {
-                emit('close')
+                emit('close-win');
             };
-            const onDelete = () => {
-                emit('delete')
-            }
             return {
-                onClose,
-                onDelete
+                onClose
             }
         }
+        
     }
 </script>
 
 <style>
-    .modal-wrapper {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 9;
-    }
+
+.modal-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    z-index: 9;
+}
 
 </style>

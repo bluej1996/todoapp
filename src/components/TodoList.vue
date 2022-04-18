@@ -1,55 +1,67 @@
 <template>
-    <div class="card mt-2" v-for="(todo, index) in todos" v-bind:key="todo.id">
-        <div 
-            class="card-body p-2 d-flex"
-            @click="moveToPage(todo.id)"
-            style="cursor:pointer"
-        >
-            <div class="flex-grow-1">
-                <input 
-                    class="ml-2 mr-2"
-                    type="checkbox"                      
-                    :checked="todo.complete" 
-                    :id="todo.id" 
-                    @change="toggleTodo(index, $event)"
-                    @click.stop                    
-                >
-                <span 
-                    class="form-check-label" 
-                    :class="{ todocss : todo.complete }"                   
-                >
-                    {{ todo.subject }}
-                </span>
+
+    <ListView v-bind:items="todos">
+        <template #default="{item, index}">
+            <div 
+                class="card-body p-2 d-flex"
+                @click="moveToPage(item.id)"
+                style="cursor:pointer"
+            >
+
+                <div class="flex-grow-1">
+                    <input 
+                        class="ml-2 mr-2"
+                        type="checkbox"                      
+                        :checked="item.complete" 
+                        :id="item.id" 
+                        @change="toggleTodo(index, $event)"
+                        @click.stop                    
+                    >
+                    <span 
+                        class="form-check-label" 
+                        :class="{ todocss : item.complete }"                   
+                    >
+                        {{ item.subject }}
+                    </span>
+                </div>
+                <!-- 삭제버튼 -->
+                <div>
+                    <button 
+                        class="btn btn-danger btn-sm" 
+                        @click.stop="openModal(item.id)"
+                    >
+                        Delete
+                    </button>
+                </div>
+
             </div>
-            <!-- 삭제버튼 -->
-            <div>
-                <button 
-                    class="btn btn-danger btn-sm" 
-                    @click.stop="openModal(todo.id)"
-                >
-                    Delete
-                </button>
-            </div>
-        </div>
-    </div>
-    <!-- 경고창 -->
+        </template>
+    </ListView>
+
     <teleport to="#modal">
-        <ModalWin 
+        <!-- 경고창 -->
+        <DeleteModal 
             v-if="showModal" 
             @close="closeModal"
             @delete="deleteTodo"
+            @close-win="closeModal"
         />
     </teleport>
+
+
 </template>
 
 <script>
+    import { getCurrentInstance } from 'vue'
     import { useRouter} from 'vue-router' 
-    import ModalWin from '@/components/ModalWin.vue'
+    import DeleteModal from '@/components/DeleteModal.vue'
     import {ref} from 'vue'
+    import ListView from '@/components/ListView.vue'
 
     export default {
         components: {
-            ModalWin
+            DeleteModal,
+            ListView
         },
 
         // props: ['todos']
@@ -62,8 +74,9 @@
 
         emits: ['toggle-todo', 'delete-todo'],
 
-
-        setup(props, {emit}){
+        setup(){
+            const {emit} = getCurrentInstance();
+            // 실제 삭제될 id를 보관해 둠
             const todoDeleteId = ref(null);
 
             // 모달창 보여지는 상태
@@ -72,17 +85,23 @@
                 showModal.value = true;
                 todoDeleteId.value = index;
             }
+            
             const closeModal = () => {
                 showModal.value = false;
                 todoDeleteId.value = null;
             }
+            
             const router = useRouter();
             const toggleTodo = (index, event) => {
+                // console.log(index);
                 emit('toggle-todo', index, event.target.checked);
             };
-            const deleteTodo = () => {
-                // 삭제 버튼 클릭시 보관해 두었던 값을 활용
-                emit('delete-todo', todoDeleteId.value);
+            const deleteTodo = () => { 
+                // 삭제 버튼 클릭시 보관해 
+                // 두었던 값(todoDeleteId.value)을 활용
+                // 해당하는 todo 의 id 값
+                emit('delete-todo', todoDeleteId.value);                
+                
                 showModal.value = false;
                 todoDeleteId.value = null;
             };

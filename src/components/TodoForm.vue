@@ -4,11 +4,11 @@
         <div class="row">            
             <!-- 제목 수정 및 입력 창 -->
             <div class="col-6">
-                <div class="form-group">
-                    <label>제목</label>
-                    <input type="text" class="form-control" v-model="todo.subject">
-                    <div v-if="subjectError" class="red-text bold-text">{{ subjectError }}</div>
-                </div>
+                <InputView
+                    label="제목"
+                    :err="subjectError"
+                    v-model:subject="todo.subject"                     
+                />
             </div>
 
             <!-- 상태 수정 창 -->
@@ -47,26 +47,28 @@
 
     </form>
     
-    <Transition name="fade">
+    <Transition  name="fade">
         <!-- 안내창 -->
         <ToastBox v-if="showToast" :message="toastMessage" :type="toastAlertType"/>
     </Transition>
 
-
 </template>
 
 <script>
+import { getCurrentInstance } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
-import {computed, ref} from 'vue';
+import axios from '@/axios.js';
+import {computed, ref, onUpdated} from 'vue';
 import _ from 'lodash';
 import ToastBox from '@/components/ToastBox.vue';
 import { useToast } from '@/composables/toast.js';
+import InputView from '@/components/InputView.vue'
 
 export default {
 
     components: {
-        ToastBox
+        ToastBox,
+        InputView
     },
     props: {
         editing: {
@@ -75,7 +77,11 @@ export default {
         }
     },
     emits: ['update-todo', 'new-todo'],
-    setup(props, {emit}) {   
+    setup(props) {  
+        const {emit} = getCurrentInstance();
+        onUpdated( () => {
+            // console.log(todo.value.subject);
+        });
 
         const route = useRoute();
         const router = useRouter();
@@ -101,13 +107,13 @@ export default {
             toastMessage,
             triggerToast,
             toastAlertType
-        } = useToast();    
-
+        } = useToast();  
+        
         const getTodo = async () => {
             // 내용을 가지고 올때 로딩 보여주고
             loading.value = true;
             try {
-                const res = await axios.get(`http://localhost:3000/todos/${todoId}`);
+                const res = await axios.get(`todos/${todoId}`);
                 todo.value = { ...res.data}; // spread 연산으로 내용물만 복사
                 originalTodo.value = { ...res.data};
                 // 결과가 오게 되면
@@ -166,7 +172,7 @@ export default {
 
                 if(props.editing) {
                     // 편집으로 진입한 경우
-                    res = await axios.put(`http://localhost:3000/todos/${todoId}`, data);
+                    res = await axios.put(`todos/${todoId}`, data);
                     // console.log(res);
                     // 원본이 갱신 되었으므로 이를 반영하여 새로 저장해 줌.
                     originalTodo.value = { ...res.data };
@@ -175,7 +181,7 @@ export default {
                     triggerToast('데이터 업데이트에 성공하였습니다.', 'success');
                 }else{
                     // 신규 등록인 경우
-                    res = await axios.post(`http://localhost:3000/todos`, data);
+                    res = await axios.post(`todos`, data);
                     emit('new-todo', {});
 
                     triggerToast('데이터 저장에 성공하였습니다.', 'success');
@@ -218,27 +224,29 @@ export default {
     }
 }
 </script>
+
 <style>
-    .red-text{
-        color:red;
-    }
 </style>
+
 <style scoped>
-    .bold-text{
-        font-weight: 900;
-    }
+
     .fade-enter-active,
-    .fade-leave-active{
+    .fade-leave-active {
         transition: all 0.5s ease;
     }
+
+
     .fade-enter-from,
-    .fade-leave-to{
+    .fade-leave-to {
         opacity: 0;
-        transform: translateY(-50px);
+        transform: translateY(-30px);
     }
+
     .fade-enter-to,
-    .fade-leave-from{
+    .fade-leave-from {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0px);
     }
+
+
 </style>
