@@ -23,12 +23,10 @@
                             type="button"
                         >
                             {{ todo.complete ? 'Complete' : 'Incomplete' }}
-
                         </button>
                     </div>
                 </div>
             </div>
-
             <!-- 본문내용 입력 및 수정 창 -->
             <div class="col-12">
                 <div class="form-group">
@@ -36,38 +34,24 @@
                     <textarea class="form-control" cols="30" rows="10" v-model="todo.body"></textarea>
                 </div>
             </div>
-
         </div>        
-
         <button class="btn btn-primary" type="submit" :disabled="todoUpdate">
             {{ editing ? '수정' : '생성' }}
         </button>
-
         <button class="btn btn-outline-dark ml-2" @click="moveBack" type="button">취소</button>
-
     </form>
-    
-    <Transition  name="fade">
-        <!-- 안내창 -->
-        <ToastBox v-if="showToast" :message="toastMessage" :type="toastAlertType"/>
-    </Transition>
-
 </template>
 
 <script>
-import { getCurrentInstance } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import axios from '@/axios.js';
 import {computed, ref, onUpdated} from 'vue';
 import _ from 'lodash';
-import ToastBox from '@/components/ToastBox.vue';
 import { useToast } from '@/composables/toast.js';
 import InputView from '@/components/InputView.vue'
 
 export default {
-
     components: {
-        ToastBox,
         InputView
     },
     props: {
@@ -76,9 +60,7 @@ export default {
             default: false
         }
     },
-    emits: ['update-todo', 'new-todo'],
-    setup(props) {  
-        const {emit} = getCurrentInstance();
+    setup(props) {
         onUpdated( () => {
             // console.log(todo.value.subject);
         });
@@ -151,9 +133,7 @@ export default {
 
         // 제목 미 입력시 경고 내용
         const subjectError = ref('');
-
         const onSave = async () => {
-
             subjectError.value = '';
             // 만약에 제목이 없으면 등록 및 편집 불가
             if(!todo.value.subject) {
@@ -176,24 +156,23 @@ export default {
                     // console.log(res);
                     // 원본이 갱신 되었으므로 이를 반영하여 새로 저장해 줌.
                     originalTodo.value = { ...res.data };
-                    emit('update-todo', {});
 
                     triggerToast('데이터 업데이트에 성공하였습니다.', 'success');
                 }else{
                     // 신규 등록인 경우
                     res = await axios.post(`todos`, data);
-                    emit('new-todo', {});
 
+                    //  제목, 내용을 비운다.
+                    todo.value.subject = '';
+                    todo.value.body = '';
+                    
                     triggerToast('데이터 저장에 성공하였습니다.', 'success');
-                }                
-
-                //  제목, 내용을 비운다.
-                todo.value.subject = '';
-                todo.value.body = '';
-                // 목록으로 돌아간다.
-                router.push({
-                        name: 'Todos'
-                });
+                }
+                if(!props.editing){
+                    router.push({
+                            name: 'Todos'
+                    });
+                }
 
             } catch(error) {
                 console.log(error);

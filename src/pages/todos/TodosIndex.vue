@@ -24,10 +24,6 @@
 
         <!-- 페이지네이션 -->
         <AppPagination :currentPage="nowPage" :allPage="numberOfPages" @page-show="getTodo" />
-
-        <!-- 안내창 -->
-        <ToastBox v-if="showToast" :message="toastMessage" :type="toastAlertType" />
-
     </div>
 </template>
 
@@ -42,11 +38,7 @@
     import AppTitle from '@/components/AppTitle.vue'
     import ErrorBox from '@/components/ErrorBox.vue'
     import AppPagination from '@/components/AppPagination.vue'
-
-    import ToastBox from '@/components/ToastBox.vue';
-    import {
-        useToast
-    } from '@/composables/toast.js';
+    import { useToast } from '@/composables/toast.js';
 
     import {
         useRouter
@@ -59,8 +51,6 @@
             AppTitle,
             ErrorBox,
             AppPagination,
-
-            ToastBox
         },
 
         setup() {
@@ -73,7 +63,7 @@
             };
 
             // 타이틀
-            const apptext = ref('오늘 할일');
+            const apptext = ref('Todo list');
 
             // 할일 목록(배열)을 저장
             const todos = ref([]);
@@ -161,13 +151,13 @@
             // TodoSimpleForm 에서  
             // add-todo 이벤트로 전달된 객체를 
             // 처리해 주는 콜백함수 
-            const addTodo = async (추가되는할일) => {
+            const addTodo = async (todo) => {
                 error.value = '';
                 try {
                     // 데이터 베이스에 저장이 되어야 하는 데이터
                     await axios.post('todos', {
-                        subject: 추가되는할일.subject,
-                        complete: 추가되는할일.complete
+                        subject: todo.subject,
+                        complete: todo.complete
                     });
                     getTodo(1);
                 } catch (err) {
@@ -240,6 +230,8 @@
                 toastMessage,
                 triggerToast,
                 toastAlertType
+
+                
             }
         }
     }
